@@ -23,6 +23,23 @@ I annotated cells using the MapMyCells platform with the 10x Whole Mouse Brain T
 
 ## Differential Accessibility analysis
 
-## Sources
+## References
+
+### Data
 
 Dataset: Fenna M. Krienen, Kirsten M. Levandowski, Heather Zaniewski, Ricardo C.H. del Rosario, Margaret E. Schroeder, Melissa Goldman, Alyssa Lutservitz, Qiangge Zhang, Katelyn X. Li, Victoria F. Beja-Glasser, Jitendra Sharma, Tay Won Shin, Abigail Mauermann, Alec Wysoker, James Nemesh, Seva Kashin, Josselyn Vergara, Gabriele Chelini, Jordane Dimidschstein, Sabina Berretta, Ed Boyden, Steven A. McCarroll, Guoping Feng (2023) A Marmoset Brain Cell Census Reveals Persistent Influence of Developmental Origin on Neurons. [Dataset]. Available from https://assets.nemoarchive.org/dat-1je0mn3
+
+### Literature
+
+Ezran, Camille, et al. "Mouse lemur cell atlas informs primate genes, physiology and disease." Nature 644.8075 (2025): 185-196. 
+
+Gontarz, Paul, et al. "Comparison of differential accessibility analysis strategies for ATAC-seq data." Scientific reports 10.1 (2020): 10150.
+
+Krienen, Fenna M., et al. "A marmoset brain cell census reveals regional specialization of cellular identities." Science advances 9.41 (2023): eadk3986. 
+
+Teo, Alan Yue Yang, et al. "Best practices for differential accessibility analysis in single-cell epigenomics." Nature communications 15.1 (2024): 8805. 
+
+Yan, Feng, et al. "From reads to insight: a hitchhiker’s guide to ATAC-seq data analysis." Genome biology 21.1 (2020): 22. 
+
+Yao, Zizhen, et al. "A high-resolution transcriptomic and spatial atlas of cell types in the whole mouse brain." Nature 624.7991 (2023): 317-332. 
+
