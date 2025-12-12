@@ -117,7 +117,7 @@ multiome_data_filtered <- RunTFIDF(multiome_data_filtered)
 multiome_data_filtered <- RunSVD(multiome_data_filtered)
 
 # checkpoint save
-SaveSeuratRds(object = multiome_data_filtered, file = "multiome_data_filtered.Rds")
+SaveSeuratRds(object = multiome_data_filtered, file = "01_multiome_data_filtered.Rds")
 
 # save .h5ad for MapMyCells
 library(scCustomize)
