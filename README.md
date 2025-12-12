@@ -250,7 +250,7 @@ library(Seurat)
 library(SingleR)
 
 # reference data preparation
-reference <- read_h5ad("~/Downloads/microcebus_murinus_brainstem_and_cortex.h5ad")
+reference <- read_h5ad("microcebus_murinus_brainstem_and_cortex.h5ad")
 reference <- reference$as_Seurat()
 ```
 
@@ -279,7 +279,7 @@ reference <- subset(reference, features = rownames(reference)[rownames(reference
 ```
 I ran SingleR under the Wilcoxon Rank Sum Test, first using log-normalized data. The result is a large dataframe, which was saved as an R object.
 ```
-data <- LoadSeuratRds("~/Documents/shixuan_liu/data/marmoset_brainstem/multiome_data_final.Rds")
+data <- LoadSeuratRds("multiome_data_final.Rds")
 norm_counts <- LayerData(data, assay = "RNA", layer = 'data') # LogNormalized
 raw_counts <- LayerData(data, assay = "RNA", layer = 'counts')
 
@@ -300,13 +300,13 @@ Finally, I added these annotations to the original (and now very large) Seurat o
 ```
 rownames(cellannotation_microcebus)[1:5] # make sure you have cell IDs
 data <- Seurat::AddMetaData(data, cellannotation_microcebus$pruned.labels, col.name = 'SingleR_annt_microcebus_ref')
-saveRDS(data,file = "~/Documents/shixuan_liu/data/marmoset_brainstem/multiome_data_final_v2.Rds")
+saveRDS(data,file = "multiome_data_final.Rds")
 ```
 As one might expect, the majority of the cells are identified as oligodendroctyes, but 38% of the cells are assigned to either neurons (not subdivided as in MapMyCells) or astrocytes. Thee MapMyCells WMB annotations and the SingleR Microcebus annotations do not have perfectly congruent celltypes, but between both strategies there is high similarity in number of assignments to either oligodendrocytes or OPCs (MMC-WMB = 9098, SingleR-Mm = 10258), as well as the labeling of either astrocytes or ependymal cells (MMC-WMB = 1407, SingleR-Mm = 1588). Furthermore, 303 cells were also pruned during the SingleR prediction due to low quality annotation.
 
 ```
-microcebus_annotations <- readRDS("Documents/shixuan_liu/data/marmoset_brainstem/singleR_microcebus_cellannotation.Rds")
-data <- readRDS("Documents/shixuan_liu/data/marmoset_brainstem/multiome_data_final_v2.Rds")
+microcebus_annotations <- readRDS("singleR_microcebus_cellannotation.Rds")
+data <- readRDS("multiome_data_final.Rds")
 data <- SetIdent(data, value = 'SingleR_annt_microcebus_ref')
 DimPlot(data, reduction = "umap", repel = T, label = T) #+ NoLegend()
 # Error in data.frame(..., check.names = FALSE) : 
