@@ -238,6 +238,54 @@ data.frame(Cell_counts=head(sort(table(mapmycells_WMB$class_name),decreasing=T),
 
 ## Differential Expression analysis
 
+```
+library(ggplot2)
+DefaultAssay(data) <- "RNA"
+Idents(data) <- "class_name"
+
+# oligodendrocytes vs glutamatergic neurons
+oligo_pglut.de.markers <- FindMarkers(data, ident.1 = "31 OPC-Oligo", ident.2 = "23 P Glut")
+head(oligo_pglut.de.markers)
+# p_val avg_log2FC pct.1 pct.2 p_val_adj
+# EPHA7            0  -4.990820 0.043 0.962         0
+# ADCY8            0  -5.121001 0.052 0.971         0
+# SRRM3            0  -4.881668 0.032 0.945         0
+# LOC103787440     0  -5.257025 0.028 0.939         0
+# TENM4            0  -4.886707 0.085 0.988         0
+# LOC103796371     0  -4.610896 0.056 0.959         0
+
+range(oligo_pglut.de.markers$avg_log2FC)
+# [1] -8.254263  5.958942
+write.csv(oligo_pglut.de.markers, file = "oligo_pglut_de_markers.csv")
+
+# glutamatergic neurons vs astrocytes
+pglut_astro.de.markers <- FindMarkers(data, ident.1 = "23 P Glut", ident.2 = "30 Astro-Epen")
+head(pglut_astro.de.markers)
+# p_val avg_log2FC pct.1 pct.2 p_val_adj
+# LOC103787440     0   5.352007 0.939 0.045         0
+# LOC100413948     0   5.000467 0.993 0.100         0
+# KSR2             0   4.767807 0.971 0.095         0
+# SCN3A            0   4.328221 0.957 0.088         0
+# ANO4             0   4.711078 0.939 0.075         0
+# PLPPR1           0   4.557623 0.921 0.059         0
+range(pglut_astro.de.markers$avg_log2FC)
+# [1] -8.625408  6.539726
+write.csv(pglut_astro.de.markers, file = "pglut_astro_de_markers.csv")
+
+# astrocytes vs oligodendrocytes
+astro_oligo.de.markers <- FindMarkers(data, ident.1 = "30 Astro-Epen", ident.2 = "31 OPC-Oligo")
+head(astro_oligo.de.markers)
+# p_val avg_log2FC pct.1 pct.2 p_val_adj
+# BMPR1B       0   6.470252 0.924 0.036         0
+# RFX4         0   6.113532 0.896 0.033         0
+# GLI3         0   7.028026 0.866 0.013         0
+# SLC4A4       0   6.065063 0.962 0.113         0
+# ARHGAP26     0   4.884257 0.935 0.096         0
+# GASK1A       0   6.239898 0.865 0.030         0
+range(astro_oligo.de.markers$avg_log2FC)
+# [1] -5.352012  9.268554
+write.csv(astro_oligo.de.markers, file = "astro_oligo_de_markers.csv")
+```
 
 ## Differential Accessibility analysis
 
