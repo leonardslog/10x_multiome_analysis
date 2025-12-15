@@ -175,7 +175,7 @@ SaveSeuratRds(object = multiome_data_filtered, file = "multiome_data_filtered.Rd
 
 ## Cell Annotation
 
-After annotating the cells using the MapMyCells browser platform using the 10x Whole Mouse Brain Taxonomy (CCN20230722) as the reference. I restarted a new environment and added the output as metadata to the previously saved Seurat object. Rownames renamed as the cell_ID to match the metadata of the Seurat object.
+I annotated the cells using the MapMyCells browser platform with the 10x Whole Mouse Brain Taxonomy (CCN20230722) as the reference. The results were output as .csv which could be added as metadata to the Seurat object. Seurat rownames were renamed as the cell_ID to match the metadata.
 
 ```
 library(Seurat)
@@ -199,7 +199,7 @@ colnames(mapmycells_WMB)
 
 rownames(mapmycells_WMB) <- mapmycells_WMB$cell_id
 ```
-From the distibution of celltype counts (N=16227), over 60% of the cells are identified as oligodendrocytes or oligodendrocyte precursor cells, with the 2nd and 3rd largest clusters consisting of Pons and glutamatergic neuron cells (#23) and astrocytes or ependymal cells (#30).
+From the distibution of celltype counts (N=16227), over 60% of the cells are identified as oligodendrocytes or oligodendrocyte precursor cells (OPCs), with the 2nd and 3rd largest clusters consisting of Pons or glutamatergic neuron cells ("23 P Glut") and astrocytes or ependymal cells ("30 Astro-Epen"), respectively.
 ```
 data.frame(Cell_counts=head(sort(table(mapmycells_WMB$class_name),decreasing=T),34))
 # most well represented cells
@@ -234,17 +234,21 @@ data.frame(Cell_counts=head(sort(table(mapmycells_WMB$class_name),decreasing=T),
 # 28   08 CNU-MGE GABA                1
 ```
 
-
-
 ## Differential Expression analysis
-
+I examined differential expression between pairs of the common celltype clusters (oligodendrocytes-OPCs, pons-glutamatergic neurons, and astrocytes-ependymal groups) using FindMarkers() (Default method: Wilcoxon Rank Sum test). 
 ```
 library(ggplot2)
 DefaultAssay(data) <- "RNA"
 Idents(data) <- "class_name"
 
 # oligodendrocytes vs glutamatergic neurons
-oligo_pglut.de.markers <- FindMarkers(data, ident.1 = "31 OPC-Oligo", ident.2 = "23 P Glut")
+oligo_pglut.de.markers <- FindMarkers(
+  data,
+  ident.1 = "31 OPC-Oligo",
+  ident.2 = "23 P Glut",
+  test.use = 'wilcox',
+  min.pct = 0.1
+)
 head(oligo_pglut.de.markers)
 # p_val avg_log2FC pct.1 pct.2 p_val_adj
 # EPHA7            0  -4.990820 0.043 0.962         0
@@ -259,7 +263,13 @@ range(oligo_pglut.de.markers$avg_log2FC)
 write.csv(oligo_pglut.de.markers, file = "oligo_pglut_de_markers.csv")
 
 # glutamatergic neurons vs astrocytes
-pglut_astro.de.markers <- FindMarkers(data, ident.1 = "23 P Glut", ident.2 = "30 Astro-Epen")
+pglut_astro.de.markers <- FindMarkers(
+  data,
+  ident.1 = "23 P Glut",
+  ident.2 = "30 Astro-Epen",
+  test.use = 'wilcox',
+  min.pct = 0.1
+)
 head(pglut_astro.de.markers)
 # p_val avg_log2FC pct.1 pct.2 p_val_adj
 # LOC103787440     0   5.352007 0.939 0.045         0
@@ -273,7 +283,13 @@ range(pglut_astro.de.markers$avg_log2FC)
 write.csv(pglut_astro.de.markers, file = "pglut_astro_de_markers.csv")
 
 # astrocytes vs oligodendrocytes
-astro_oligo.de.markers <- FindMarkers(data, ident.1 = "30 Astro-Epen", ident.2 = "31 OPC-Oligo")
+astro_oligo.de.markers <- FindMarkers(
+  data,
+  ident.1 = "30 Astro-Epen",
+  ident.2 = "31 OPC-Oligo",
+  test.use = 'wilcox',
+  min.pct = 0.1
+)
 head(astro_oligo.de.markers)
 # p_val avg_log2FC pct.1 pct.2 p_val_adj
 # BMPR1B       0   6.470252 0.924 0.036         0
@@ -289,6 +305,71 @@ write.csv(astro_oligo.de.markers, file = "astro_oligo_de_markers.csv")
 
 ## Differential Accessibility analysis
 
+Differential chromatin accessibility analysis was conducted using the same approach on the ATAC assay: 
+
+```
+# plot info for well represented cells
+DefaultAssay(data) <- "ATAC"
+idents.plot <- c("31 OPC-Oligo", "23 P Glut", "30 Astro-Epen")
+data <- SortIdents(data)
+
+# find peaks associated with gene activities
+library(presto)
+
+oligo_pglut.da.peaks <- FindMarkers(
+  object = data,
+  ident.1 = "31 OPC-Oligo",
+  ident.2 = "23 P Glut",
+  test.use = 'wilcox',
+  min.pct = 0.1
+)
+write.csv(oligo_pglut.da.peaks, file = "oligo_pglut_da_peaks.csv")
+
+astro_oligo.da.peaks <- FindMarkers(
+  object = data,
+  ident.1 = "30 Astro-Epen",
+  ident.2 = "31 OPC-Oligo",
+  test.use = 'wilcox',
+  min.pct = 0.1
+)
+write.csv(astro_oligo.da.peaks, file = "astro_oligo_da_peaks.csv")
+
+pglut_astro.da.peaks <- FindMarkers(
+  object = data,
+  ident.1 = "23 P Glut",
+  ident.2 = "30 Astro-Epen",
+  test.use = 'wilcox',
+  min.pct = 0.1
+)
+write.csv(pglut_astro.da.peaks, file = "pglut_astro_da_peaks.csv")
+```
+I visualized differential accessibility between cells and linked peaks associated with genes of interest using CoveragePlot().
+```
+# coverage plot for gene recently associated with schizophrenia 
+CoveragePlot(
+  object = data,
+  assay = "ATAC",
+  expression.assay = "GENE_ACTIVITIES",
+  region = "GRIN2A",
+  extend.upstream = 1000,
+  extend.downstream = 1000,
+  idents = idents.plot,
+  annotation = TRUE
+)
+```
+Two genes (SLC4A4, RFX4) closely associated with peaks in the ATAC assay were also identified as highly differentially expressed markers SLC4A4 between oligodendrocyte+OPCs and astrocytes+ependymal cells.
+```
+unique(Links(data[['ATAC']])$gene)
+# [1] "PRUNE2"  "GLIS3"   "SH3GL2"  "SLC24A2" "ZNRF3"   "FSTL4"   "MAN2A1"  "EDIL3"  
+# [9] "VCAN"    "ADCY2"   "GPM6A"   "TMEM144" "BMPR1B"  "SCD5"    "SLC4A4"  "LDB2"   
+# [17] "SLC35F1" "MAP7"    "QKI"     "EPN2"    "PITPNC1" "MSI2"    "SV2B"    "CHN1"   
+# [25] "R3HDM1"  "PLCL1"   "SATB2"   "AGAP1"   "PIP4K2A" "RNF220"  "TTLL7"   "HECW1"  
+# [33] "NXPH1"   "PTPRZ1"  "NELL2"   "TMTC2"   "RFX4"    "MEGF11"  "NOVA1"   "PLEKHH1"
+# [41] "SMOC1"   "SLC1A2"  "GRIN2A"  "XYLT1"   "PRKCB"   "SHTN1"   "DLGAP2"  "DOCK5"  
+# [49] "AQP4"    "DTNA"    "CDH20"   "PHLPP1"  "MBP"     "DGKG"    "ATP13A4" "PXK"    
+# [57] "LRIG1"   "ST18"    "PREX2"   "MMP16"   "KHDRBS3" "ENPP2"   "TRPS1"   "TF"     
+# [65] "KAT2B"   "ARPP21"  "ATP1A2"  "TNR"     "CNKSR2" 
+```
 
 ## Celltype prediction with primate data (_Microcebus murinus_) and SingleR
 I downloaded RNA-seq data derived from brainstem and cortex tissue from the [Tabula murnius]("https://tabula-microcebus.sf.czbiohub.org/whereisthedata") and converted the .h5ad to a Seurat object.
@@ -384,7 +465,7 @@ data.frame(Cell_counts=head(sort(table(microcebus_annotatoins$labels),decreasing
 # 17            leptomeningeal cell                8
 # 18                        unknown                8
 ```
-Visualization of shared gene features between the _Microcebus murinus_ and _Callithrix jacchus_ references, and Multiome data show there are 860 genes in the _Microcebus_ genome that are absent in the _Callithrix_. While irrelevant for this experiment due their absence in a dataset derived from a subset of brain tissue with very specific expression profiles, suboptimal genome selection for annotation can drastically impact downstream results.
+Visualization of shared gene features between the _Microcebus murinus_ and _Callithrix jacchus_ references and multiome data show there are 860 genes in the _Microcebus_ reference dataset that are absent in the _Callithrix_ genome reference. While irrelevant for this experiment due their absence in the query dataset derived from a subset of brain tissue with very specific expression profiles, this highlights how suboptimal reference selection for annotation can drastically impact downstream results if target genes of interest are not represented.
 ```
 library(VennDiagram)
 venn.diagram(
