@@ -357,7 +357,29 @@ CoveragePlot(
   annotation = TRUE
 )
 ```
-Two genes (SLC4A4, RFX4) closely associated with peaks in the ATAC assay were also identified as highly differentially expressed markers SLC4A4 between oligodendrocyte+OPCs and astrocytes+ependymal cells.
+## linking peaks to markers
+
+I took all markers designated by the CZ Biohub and looked for any associated peaks using LinkPeaks().
+```
+data <- LinkPeaks(
+  object = data,
+  peak.assay = "ATAC",
+  expression.assay = "GENE_ACTIVITIES",
+  peak.slot = "counts",
+  method = "pearson",
+  gene.coords = NULL,
+  distance = 5e+05,
+  min.distance = NULL,
+  min.cells = 10,
+  genes.use = all_markers,
+  n_sample = 200,
+  pvalue_cutoff = 0.05,
+  score_cutoff = 0.05,
+  gene.id = FALSE,
+  verbose = TRUE
+)
+```
+This produced 69/97 genes found to be proximally associated with peaks in the ATAC assay: 
 ```
 unique(Links(data[['ATAC']])$gene)
 # [1] "PRUNE2"  "GLIS3"   "SH3GL2"  "SLC24A2" "ZNRF3"   "FSTL4"   "MAN2A1"  "EDIL3"  
@@ -370,6 +392,8 @@ unique(Links(data[['ATAC']])$gene)
 # [57] "LRIG1"   "ST18"    "PREX2"   "MMP16"   "KHDRBS3" "ENPP2"   "TRPS1"   "TF"     
 # [65] "KAT2B"   "ARPP21"  "ATP1A2"  "TNR"     "CNKSR2" 
 ```
+
+Of these, only two genes (SLC4A4, RFX4) closely associated with accessible chromatin regions were also identified as markers of differential expression between oligodendrocyte+OPCs and astrocytes+ependymal cell clusters. The incongruence between highly expressed genes revealed in the RNA assay and those found to be associated with peaks in the ATAC assay is to an extent expected since cell-specific gene expression might be mediated by cellular context and enhancers well outside its proximity.
 
 ## Celltype prediction with primate data (_Microcebus murinus_) and SingleR
 I downloaded RNA-seq data derived from brainstem and cortex tissue from the [Tabula murnius]("https://tabula-microcebus.sf.czbiohub.org/whereisthedata") and converted the .h5ad to a Seurat object.
