@@ -1,4 +1,4 @@
-# Processing and Analysis of 10X Multiomic data
+# Processing and analysis of 10X multiomic data
 
 ## Overview
 
@@ -12,7 +12,7 @@ https://github.com/mousepixels/sanbomics_scripts
 
 ## System setup
 
-_**Note**_: At the time of this exercise the developer version of `Seurat` was required to fix a [plotting bug](https://github.com/satijalab/seurat/issues/10180) encountered in downstream plotting.
+_**Note**_: At the time of this exercise the developer version of `Seurat` was required to fix a [bug](https://github.com/satijalab/seurat/issues/10180) encountered in downstream plotting.
 
 ~~~
 # analysis
@@ -42,7 +42,7 @@ library(pheatmap)
 library(VennDiagram)
 ~~~
 
-## Pre-processing
+## Preprocessing
 
 Loading metadata for the raw counts:
 ```
@@ -52,7 +52,7 @@ meta <- read.csv(
   row.names = 1)
 ```
 
-For the custom annotation, I had to use the same _C. jacchus_ genome build as what the reads were aligned to (NCBI RefSeq Assembly ID: [GCF_009663435.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009663435.1/), or 'caljac4' in the UCSC browser.
+For the custom annotation, I had to use the same _C. jacchus_ genome build as what the reads were aligned to (NCBI RefSeq Assembly ID: [GCF_009663435.1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009663435.1/) ('caljac4' in the UCSC browser).
 ```
 annotations <- rtracklayer::import('Callithrix_jacchus_cj1700_1/ncbi_dataset/data/GCF_009663435.1/genomic.gtf')
 ```
@@ -101,7 +101,7 @@ annotations <- annotations[!is.na(annotations$gene_biotype)] # NAs will introduc
 seqlevelsStyle(annotations) # confirmed that new style is UCSC
 ```
 
-## Create Multiome Seurat object
+## Create multiome Seurat object
 
 The raw RNA and ATAC feature matrices were individually loaded and filtered to remove all droplets deemed cell non-calls by the CellRanger pipeline.
 ```
@@ -158,6 +158,7 @@ gc()
 ```
 
 ## Normalization
+
 **_Note_**: MapMyCells does not require normalization for cell annotation, and developers urge caution in interpreting results from log-normalized data, so if performing this step first, it's important to reference the correct layer within the Seurat object when formatting its input.
 
 ```
@@ -173,7 +174,7 @@ multiome_data_filtered <- RunTFIDF(multiome_data_filtered)
 multiome_data_filtered <- RunSVD(multiome_data_filtered)
 ```
 
-## Cell Annotation
+## Cell annotation
 
 Fomatting an anndata (.h5ad) or .csv file for MapMyCells input:
 ```
@@ -241,7 +242,8 @@ data.frame(Cell_counts=head(sort(table(mapmycells_WMB$class_name),decreasing=T),
 # 28   08 CNU-MGE GABA                1
 ```
 
-## Differential Expression analysis
+## Differential expression analysis
+
 I examined differential expression between pairs of these celltype clusters using Wilcoxon Rank Sum test with `FindMarkers()`. 
 ```
 DefaultAssay(data) <- "RNA"
@@ -309,7 +311,7 @@ range(astro_oligo.de.markers$avg_log2FC)
 write.csv(astro_oligo.de.markers, file = "astro_oligo_de_markers.csv")
 ```
 
-## Differential Accessibility analysis
+## Differential accessibility analysis
 
 Differential chromatin accessibility analysis was conducted using the same approach on the ATAC assay: 
 
@@ -351,7 +353,7 @@ write.csv(pglut_astro.da.peaks, file = "pglut_astro_da_peaks.csv")
 ```
 ## Gene activity
 
-Gene expression can be estimated from the accessible chromatin regions with `GeneActivity()`. However, the resulting matrix should not necessarily correspond to measured RNA expression due to the complexities of enhancer proximity and transcription factor profiles which should vary by cell type and age.
+Gene expression can be estimated from the accessible chromatin regions with `GeneActivity()`. However, the resulting matrix will not necessarily correspond to measured RNA expression due to the complexities of enhancer proximity and transcription factor profiles.
 ```
 # compute gene activities
 gene.activities <- GeneActivity(data)
@@ -368,7 +370,7 @@ data <- NormalizeData(
 )
 ```
 
-## Linking peaks to markers
+## Linking peaks to genes
 
 Gene expression (whether directly calculated from RNA expression data or inferred from ATAC data) that is correlated with accessible chromatin regions can be characterized using `LinkPeaks()` within a specified distance from the transciption start sites identified in pre-processing. Here, peaks associated with a set of marker genes associated with the major brainstem celltypes (oligodendrocytes, OPCs, glutamatergic neurons, astrocytes) found using the [CellxGene]("https://cellxgene.cziscience.com/") Gene Expression tool were queried.
 
@@ -435,7 +437,7 @@ CoveragePlot(
 
 ## Celltype prediction with primate data (_Microcebus murinus_) and SingleR
 
-Cell annotation can be drastically impacted by number of factors, including reference dataset. Using MapMyCells, I predicted celltypes using a bootstrap-like algorithm to compare expression profiles with a well annotated wild type/healthy mouse atlas. However, evolutionary distance between reference and query should also be considered. The emergence of the mouse lemur _Microcebus murinus_ as a model primate system enables a lightweight test of the effects of using a reference dataset of a more closely related system on cell annotation and downstream DE and DA analyses. 
+Cell annotation can be drastically impacted by number of factors, including but not limited to the quality of the reference itself. Using MapMyCells, I predicted celltypes using a bootstrap-like algorithm to compare expression profiles in primate tissue with a well annotated wild type/healthy mouse atlas. However, evolutionary distance between reference and query should also be considered. The emergence of the mouse lemur _Microcebus murinus_ as a model primate system enables a lightweight test of the effects of using a reference dataset of a more closely related system on cell annotation and downstream DE and DA analyses. 
 
 I downloaded RNA-seq data derived from brainstem and cortex tissue from the [Tabula murnius]("https://tabula-microcebus.sf.czbiohub.org/whereisthedata") and converted the .h5ad to a Seurat object.
 ```
@@ -488,13 +490,13 @@ Cell x gene expression patterns were visualized with functions from the `pheatma
 plotScoreHeatmap(cellannotation_microcebus)
 plotDeltaDistribution(cellannotation_microcebus, ncol = 4, dots.on.top = FALSE)
 ```
-Finally, these annotations could be added to the original (and now very large) Seurat object's metadata to faciliate comparison of celltype annotations.
+Finally, these annotations were added to the original (and now very large) Seurat object's metadata to faciliate comparison of celltype annotations.
 ```
 rownames(cellannotation_microcebus)[1:5] # make sure you have cell IDs
 data <- Seurat::AddMetaData(data, cellannotation_microcebus$pruned.labels, col.name = 'SingleR_annt_microcebus_ref')
 saveRDS(data,file = "multiome_data_final.Rds")
 ```
-As one might expect, the majority of the cells are identified as oligodendroctyes, but 38% of the cells are assigned to either neurons (not subdivided as in MapMyCells) or astrocytes. Thee MapMyCells WMB annotations and the SingleR Microcebus annotations do not have perfectly congruent celltypes, but between both strategies there is similarity in number of assignments to either oligodendrocytes or OPCs (MMC-WMB = 9098, SingleR-Mm = 10258), as well as the labeling of either astrocytes or ependymal cells (MMC-WMB = 1407, SingleR-Mm = 1588). Furthermore, 303 cells were also pruned during the SingleR prediction due to low quality annotation.
+Expectedly, the majority of the cells are identified as oligodendroctyes, but 38% of the cells are assigned to either neurons (not subdivided as in MapMyCells) or astrocytes. Thee MapMyCells WMB annotations and the SingleR Microcebus annotations do not have perfectly congruent celltypes, but between both strategies there is similarity in number of assignments to either oligodendrocytes or OPCs (MMC-WMB = 9098, SingleR-Mm = 10258), as well as the labeling of either astrocytes or ependymal cells (MMC-WMB = 1407, SingleR-Mm = 1588). Furthermore, 303 cells were also pruned during the SingleR prediction due to low quality annotation.
 
 ```
 microcebus_annotations <- readRDS("singleR_microcebus_cellannotation.Rds")
@@ -540,6 +542,7 @@ venn.diagram(
   output=TRUE
 )
 ```
+![Venn diagram showing shared gene counts between assays and references](figs/04_venndiagram_microcebus_vs_callithrix_assaycomparison.png) \
 While irrelevant for this experiment due to their absence in the query data, this result highlights the nontriviality of reference choice for both cluster identification and downstream analyses. Addiionally, the near 9000 genes shared by the RNA expression assay and the _Callithrix_ reference genome but not inferred from `GeneActivity()` identificaiton further highlights the signal discordance between direct and indirect gene expression quantification.
 
 ## References
