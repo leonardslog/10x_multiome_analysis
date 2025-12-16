@@ -490,13 +490,15 @@ Cell x gene expression patterns were visualized with functions from the `pheatma
 plotScoreHeatmap(cellannotation_microcebus)
 plotDeltaDistribution(cellannotation_microcebus, ncol = 4, dots.on.top = FALSE)
 ```
-Finally, these annotations were added to the original (and now very large) Seurat object's metadata to faciliate comparison of celltype annotations.
+![Venn diagram showing cell annotations and quality scores from SingleR run](figs/04_SingleR_heatmap_microebus_annotations.png)
+
+These annotations were added to the original (and now very large) Seurat object's metadata to faciliate comparison of celltype annotations.
 ```
 rownames(cellannotation_microcebus)[1:5] # make sure you have cell IDs
 data <- Seurat::AddMetaData(data, cellannotation_microcebus$pruned.labels, col.name = 'SingleR_annt_microcebus_ref')
 saveRDS(data,file = "multiome_data_final.Rds")
 ```
-Expectedly, the majority of the cells are identified as oligodendroctyes, but 38% of the cells are assigned to either neurons (not subdivided as in MapMyCells) or astrocytes. Thee MapMyCells WMB annotations and the SingleR Microcebus annotations do not have perfectly congruent celltypes, but between both strategies there is similarity in number of assignments to either oligodendrocytes or OPCs (MMC-WMB = 9098, SingleR-Mm = 10258), as well as the labeling of either astrocytes or ependymal cells (MMC-WMB = 1407, SingleR-Mm = 1588). Furthermore, 303 cells were also pruned during the SingleR prediction due to low quality annotation.
+Expectedly, the majority of the cells are identified as oligodendroctyes, but 38% of the cells are assigned to either neurons (not subdivided as in MapMyCells) or astrocytes. The MapMyCells WMB annotations and the SingleR _Microcebus_ annotations do not have perfectly congruent celltypes, but between both strategies there is similarity in number of assignments to either oligodendrocytes or OPCs (MMC-WMB = 9098, SingleR-Mm = 10258), as well as the labeling of either astrocytes or ependymal cells (MMC-WMB = 1407, SingleR-Mm = 1588). Furthermore, 303 cells were also pruned during the SingleR prediction due to low quality annotation.
 
 ```
 microcebus_annotations <- readRDS("singleR_microcebus_cellannotation.Rds")
@@ -542,7 +544,6 @@ venn.diagram(
   output=TRUE
 )
 ```
-![Venn diagram showing shared gene counts between assays and references](figs/04_venndiagram_microcebus_vs_callithrix_assaycomparison.png) \
 While irrelevant for this experiment due to their absence in the query data, this result highlights the nontriviality of reference choice for both cluster identification and downstream analyses. Addiionally, the near 9000 genes shared by the RNA expression assay and the _Callithrix_ reference genome but not inferred from `GeneActivity()` identificaiton further highlights the signal discordance between direct and indirect gene expression quantification.
 
 ## References
