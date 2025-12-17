@@ -2,7 +2,7 @@
 
 ## Overview
 
-To familiarize myself with RNA and ATAC-seq analysis workflows, I opted to work raw data publicly available via the Allen Institute's [Brain Knowledge Platform](https://brain-map.org/bkp). These analyses were to be carried out on a laptop with 8 cores and 64GB of memory, so to address computational resource limitations, I analyzed 10X Multiomic data generated from brainstem tissue in the common marmoset *Callithrix jacchus*.
+To familiarize myself with RNA and ATAC-seq analysis workflows, I opted to work with publicly available raw data from the Allen Institute's [Brain Knowledge Platform](https://brain-map.org/bkp). These analyses were carried out on a laptop with 8 cores and 64GB of memory, so to address computational resource limitations, I analyzed 10X Multiomic data generated from brainstem tissue in the common marmoset *Callithrix jacchus*.
 
 I learned much of the following workflow and code from the following tutorials/vignettes: \
 https://stuartlab.org/signac/articles/overview \
@@ -269,7 +269,8 @@ head(oligo_pglut.de.markers)
 range(oligo_pglut.de.markers$avg_log2FC)
 # [1] -8.254263  5.958942
 write.csv(oligo_pglut.de.markers, file = "oligo_pglut_de_markers.csv")
-
+```
+```
 # glutamatergic neurons vs astrocytes
 pglut_astro.de.markers <- FindMarkers(
   data,
@@ -286,10 +287,12 @@ head(pglut_astro.de.markers)
 # SCN3A            0   4.328221 0.957 0.088         0
 # ANO4             0   4.711078 0.939 0.075         0
 # PLPPR1           0   4.557623 0.921 0.059         0
+
 range(pglut_astro.de.markers$avg_log2FC)
 # [1] -8.625408  6.539726
 write.csv(pglut_astro.de.markers, file = "pglut_astro_de_markers.csv")
-
+```
+```
 # astrocytes vs oligodendrocytes
 astro_oligo.de.markers <- FindMarkers(
   data,
@@ -316,9 +319,7 @@ write.csv(astro_oligo.de.markers, file = "astro_oligo_de_markers.csv")
 Differential chromatin accessibility analysis was conducted using the same approach on the ATAC assay: 
 
 ```
-# plot info for well represented cells
 DefaultAssay(data) <- "ATAC"
-idents.plot <- c("31 OPC-Oligo", "23 P Glut", "30 Astro-Epen")
 data <- SortIdents(data)
 
 # find peaks associated with gene activities
@@ -422,12 +423,13 @@ Only two of these genes (SLC4A4, RFX4) were also identified as differentially ex
 `CoveragePlot()` visualizes differential accessibility between celltypes and linked peaks associated with a gene or region of interest.
 
 ```
-# coverage plot for gene recently associated with schizophrenia 
+idents.plot <- c("31 OPC-Oligo", "23 P Glut", "30 Astro-Epen")
+
 CoveragePlot(
   object = data,
   assay = "ATAC",
   expression.assay = "GENE_ACTIVITIES",
-  region = "GRIN2A",
+  region = "GRIN2A", # schizophrenia associated gene
   extend.upstream = 1000,
   extend.downstream = 1000,
   idents = idents.plot,
