@@ -207,7 +207,7 @@ colnames(mapmycells_WMB)
 
 rownames(mapmycells_WMB) <- mapmycells_WMB$cell_id
 ```
-From the distibution of celltype counts (N=16227), over 60% of the cells are identified as oligodendrocytes or oligodendrocyte precursor cells ("31 OPC-Oligo"), with the 2nd and 3rd largest clusters consisting of glutamatergic neurons ("23 P Glut") and astrocytes or ependymal cells ("30 Astro-Epen"), respectively.
+From the distribution of celltype counts (N=16227), over 60% of the cells are identified as oligodendrocytes or oligodendrocyte precursor cells ("31 OPC-Oligo"), with the 2nd and 3rd largest clusters consisting of glutamatergic neurons ("23 P Glut") and astrocytes or ependymal cells ("30 Astro-Epen"), respectively.
 ```
 data.frame(Cell_counts=head(sort(table(mapmycells_WMB$class_name),decreasing=T),34))
 # most well represented cells
