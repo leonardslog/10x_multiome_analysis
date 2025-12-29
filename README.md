@@ -534,7 +534,7 @@ data.frame(Cell_counts=head(sort(table(microcebus_annotatoins$labels),decreasing
 # 17            leptomeningeal cell                8
 # 18                        unknown                8
 ```
-Visualization of shared gene features between the _Microcebus murinus_ and _Callithrix jacchus_ references and multiome data reveal that 840 genes in the _Microcebus_ reference dataset are absent in the _Callithrix_ genome reference:
+Visualization of shared features between the _Microcebus murinus_ data and _Callithrix jacchus_ genome reveals an 840 gene discrepancy between the references:
 ```
 library(VennDiagram)
 venn.diagram(
