@@ -352,28 +352,10 @@ pglut_astro.da.peaks <- FindMarkers(
 )
 write.csv(pglut_astro.da.peaks, file = "pglut_astro_da_peaks.csv")
 ```
-## Gene activity
-
-Gene expression can be estimated from the accessible chromatin regions with `GeneActivity()`. However, the resulting matrix will not necessarily correspond to measured RNA expression due to the complexities of enhancer proximity and transcription factor profiles.
-```
-# compute gene activities
-gene.activities <- GeneActivity(data)
-# Warning message:
-# In SingleFeatureMatrix(fragment = fragments[[x]], features = features,  :
-# 219 features are on seqnames not present in the fragment file. These will be removed.
-
-data[["GENE_ACTIVITIES"]] <- CreateAssayObject(counts = gene.activities)
-data <- NormalizeData(
-  object = data,
-  assay = 'GENE_ACTIVITIES',
-  normalization.method = 'LogNormalize',
-  scale.factor = median(data$nCount_RNA)
-)
-```
 
 ## Linking peaks to genes
 
-Gene expression (whether directly calculated from RNA expression data or inferred from ATAC data) that is correlated with accessible chromatin regions can be characterized using `LinkPeaks()` within a specified distance from the transciption start sites identified in pre-processing. Here, peaks associated with a set of marker genes associated with the major brainstem celltypes (oligodendrocytes, OPCs, glutamatergic neurons, astrocytes) found using the [CellxGene]("https://cellxgene.cziscience.com/") Gene Expression tool were queried.
+Correlations between gene expression and accessible chromatin regions can be characterized using `LinkPeaks()` within a specified distance from the transciption start sites identified in pre-processing. Here, peaks associated with a set of marker genes associated with the major brainstem celltypes (oligodendrocytes, OPCs, glutamatergic neurons, astrocytes) found using the [CellxGene]("https://cellxgene.cziscience.com/") Gene Expression tool were queried. This can also be run on the entire gene expression set if time permits (runtime on complete dataset with current resources: ~9 hrs).
 
 ```
 all_markers <- c("ST18", "CTNNA3", "RNF220", "PIP4K2A", "MBP", "TMEM144", "PDE4B", 
@@ -428,7 +410,7 @@ idents.plot <- c("31 OPC-Oligo", "23 P Glut", "30 Astro-Epen")
 CoveragePlot(
   object = data,
   assay = "ATAC",
-  expression.assay = "GENE_ACTIVITIES",
+  expression.assay = "SCT",
   region = "GRIN2A", # schizophrenia associated gene
   extend.upstream = 1000,
   extend.downstream = 1000,
