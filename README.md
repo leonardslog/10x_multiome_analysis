@@ -2,7 +2,7 @@
 
 ## Overview
 
-To familiarize myself with RNA and ATAC-seq analysis workflows, I opted to work with publicly available raw data from the Allen Institute's [Brain Knowledge Platform](https://brain-map.org/bkp). These analyses were carried out on a laptop with 8 cores and 64GB of memory, so to address computational resource limitations, I analyzed 10X Multiomic data generated from brainstem tissue in the common marmoset *Callithrix jacchus*.
+The following workflow is an analysis of publicly available raw data from the Allen Institute's [Brain Knowledge Platform](https://brain-map.org/bkp). These analyses were carried out on a laptop with 8 cores and 64GB of memory, so to address computational resource limitations, I analyzed 10X Multiomic data generated from brainstem tissue in the common marmoset *Callithrix jacchus*.
 
 I learned much of the following workflow and code from the following tutorials/vignettes: \
 https://stuartlab.org/signac/articles/overview \
