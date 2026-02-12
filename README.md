@@ -355,7 +355,7 @@ write.csv(pglut_astro.da.peaks, file = "pglut_astro_da_peaks.csv")
 
 ## Linking peaks to genes
 
-Correlations between gene expression and accessible chromatin regions can be characterized using `LinkPeaks()` within a specified distance from the transciption start sites identified in pre-processing. Here, peaks associated with a set of marker genes associated with the major brainstem celltypes (oligodendrocytes, OPCs, glutamatergic neurons, astrocytes) found using the [CellxGene]("https://cellxgene.cziscience.com/") Gene Expression tool were queried. This can also be run on the entire gene expression set if time permits (runtime on complete dataset with current resources: ~9 hrs).
+Correlations between gene expression and accessible chromatin regions can be characterized using `LinkPeaks()` within a specified distance from the transciption start sites identified in pre-processing. Here, peaks associated with a set of marker genes associated with the major brainstem celltypes (oligodendrocytes, OPCs, glutamatergic neurons, astrocytes) found using the [CellxGene]("https://cellxgene.cziscience.com/") Gene Expression tool. This can also be run on the entire gene expression set if time permits (runtime on complete dataset with current resources: ~9 hrs).
 
 ```
 all_markers <- c("ST18", "CTNNA3", "RNF220", "PIP4K2A", "MBP", "TMEM144", "PDE4B", 
